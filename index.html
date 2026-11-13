@@ -406,12 +406,51 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 .form__success.is-visible { display: block; }
 
-/* ============ Footer ============ */
-.footer { padding: 40px 0 46px; border-top: 1px solid var(--line); }
-.footer__inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; }
-.footer__links { display: flex; gap: 22px; font-size: 0.88rem; color: var(--ink-faint); }
-.footer__links a:hover { color: var(--ink); }
-.footer small { color: var(--ink-faint); }
+/* ============ Footer (rounded card, inset from body) ============ */
+.footer { padding: 0 clamp(16px, 3vw, 40px) clamp(16px, 3vw, 40px); }
+.footer__card {
+  position: relative; overflow: hidden;
+  border-radius: clamp(28px, 4vw, 48px);
+  padding: clamp(44px, 6vw, 80px) clamp(28px, 5vw, 64px) clamp(28px, 4vw, 40px);
+  background:
+    radial-gradient(56vw 34vw at 108% -10%, rgba(255, 107, 74, 0.32), transparent 62%),
+    radial-gradient(48vw 32vw at -8% 108%, rgba(201, 184, 255, 0.28), transparent 62%),
+    var(--ink);
+  color: #fff;
+}
+.footer__grid { display: grid; grid-template-columns: 1fr; gap: 44px; position: relative; z-index: 1; }
+@media (min-width: 900px) { .footer__grid { grid-template-columns: 1.3fr 1fr 1fr 1.1fr; } }
+.footer .logo { color: #fff; }
+.footer__brand p { margin-top: 18px; max-width: 30ch; color: rgba(255, 255, 255, 0.66); font-size: 0.98rem; }
+.footer__socials { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+.footer__social {
+  padding: 10px 18px; border-radius: 999px; font-weight: 600; font-size: 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.16); background: rgba(255, 255, 255, 0.07); color: #fff;
+  transition: border-color .3s ease, background .3s ease, transform .3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.footer__social:hover { border-color: rgba(255, 255, 255, 0.4); background: rgba(255, 255, 255, 0.12); transform: translateY(-2px); }
+.footer__col-title {
+  font-family: var(--font-body); font-size: 0.78rem; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255, 255, 255, 0.45);
+  margin: 0 0 18px;
+}
+.footer__col a {
+  display: block; width: fit-content; padding: 6px 0;
+  color: rgba(255, 255, 255, 0.75); font-size: 0.98rem;
+  transition: color .25s ease, transform .25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.footer__col a:hover { color: #fff; transform: translateX(4px); }
+.footer__bottom {
+  position: relative; z-index: 1;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px;
+  margin-top: clamp(48px, 7vw, 80px);
+  font-size: 0.88rem; color: rgba(255, 255, 255, 0.45);
+}
+.footer__bottom a { color: rgba(255, 255, 255, 0.7); transition: color .25s ease; }
+.footer__bottom a:hover { color: #fff; }
+.footer__top-link { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+.footer__top-link svg { transition: transform .3s cubic-bezier(0.22, 1, 0.36, 1); }
+.footer__top-link:hover svg { transform: translateY(-3px); }
 
 @media (max-width: 640px) {
   body { font-size: 16px; }
@@ -700,14 +739,46 @@ ul { margin: 0; padding: 0; list-style: none; }
 </main>
 
 <footer class="footer">
-  <div class="container footer__inner">
-    <a class="logo" href="#top">Randee<em>.</em></a>
-    <div class="footer__links">
-      <a href="#top">Главная</a>
-      <a href="#services">Услуги</a>
-      <a href="#cases">Кейсы</a>
+  <div class="footer__card">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <a class="logo" href="#top" aria-label="Randee — наверх">Randee<em>.</em></a>
+        <p>Digital-студия: сайты, брендинг и маркетинг, которые приносят клиентов, а не просто лайки.</p>
+        <div class="footer__socials">
+          <a class="footer__social" href="https://t.me/randeeru" target="_blank" rel="noopener">Telegram</a>
+          <a class="footer__social" href="https://wa.me/+79998010277" target="_blank" rel="noopener">WhatsApp</a>
+        </div>
+      </div>
+      <nav class="footer__col" aria-label="Меню в подвале">
+        <h3 class="footer__col-title">Меню</h3>
+        <a href="#services">Услуги</a>
+        <a href="#stats">О студии</a>
+        <a href="#cases">Кейсы</a>
+        <a href="#contact">Контакты</a>
+      </nav>
+      <nav class="footer__col" aria-label="Направления в подвале">
+        <h3 class="footer__col-title">Направления</h3>
+        <a href="#services">Сайты</a>
+        <a href="#services">Маркетинг</a>
+        <a href="#services">Брендинг</a>
+      </nav>
+      <div class="footer__col">
+        <h3 class="footer__col-title">Контакты</h3>
+        <a href="tel:+79998010277">+7 999 801-02-77</a>
+        <a href="mailto:info@randee.ru">info@randee.ru</a>
+        <a href="https://t.me/randeeru" target="_blank" rel="noopener">Telegram</a>
+        <a href="https://wa.me/+79998010277" target="_blank" rel="noopener">WhatsApp</a>
+      </div>
     </div>
-    <small>© 2025 Randee Digital. Все права защищены.</small>
+
+    <div class="footer__bottom">
+      <small>© 2025 Randee Digital. Все права защищены.</small>
+      <a href="#top">Политика конфиденциальности</a>
+      <a class="footer__top-link" href="#top">
+        Наверх
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 14V3M3.5 7 8 2.5 12.5 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
   </div>
 </footer>
 
