@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Randee — digital-студия: сайты, брендинг и маркетинг</title>
+<meta name="description" content="Digital-студия Randee создаёт сайты, бренды и рекламные кампании, которые приносят клиентов, а не просто лайки.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Unbounded:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="vendor/swiper-bundle.min.css">
+<style>
+/* ============ Design tokens ============ */
+:root {
+  --bg: #FAF6F0;
+  --bg-soft: #F3ECE3;
+  --ink: #1B1524;
+  --ink-soft: rgba(27, 21, 36, 0.64);
+  --ink-faint: rgba(27, 21, 36, 0.38);
+  --card: rgba(255, 255, 255, 0.66);
+  --card-solid: #FFFFFF;
+  --line: rgba(27, 21, 36, 0.10);
+  --peach: #FFB38A;
+  --coral: #FF6B4A;
+  --lavender: #C9B8FF;
+  --mint: #9FE8C4;
+  --sky: #A8D8FF;
+  --radius-xl: 32px;
+  --radius-lg: 24px;
+  --radius-md: 16px;
+  --font-display: 'Unbounded', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --grad-hero: linear-gradient(100deg, var(--coral) 0%, var(--peach) 38%, var(--lavender) 74%, var(--sky) 100%);
+}
+
+/* ============ Reset / base ============ */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+img, svg { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 600; line-height: 1.12; margin: 0; }
+p { margin: 0; }
+ul { margin: 0; padding: 0; list-style: none; }
+:focus-visible { outline: 2px solid var(--coral); outline-offset: 3px; border-radius: 4px; }
+
+.skip-link {
+  position: fixed; top: -60px; left: 16px; z-index: 200;
+  background: var(--ink); color: #fff; padding: 10px 18px; border-radius: 999px;
+  transition: top .25s ease;
+}
+.skip-link:focus { top: 16px; }
+
+.container { width: min(1240px, 100% - 48px); margin-inline: auto; }
+@media (max-width: 640px) { .container { width: calc(100% - 40px); } }
+
+/* ============ Noise texture ============ */
+.noise {
+  position: fixed; inset: 0; z-index: 90; pointer-events: none;
+  opacity: 0.04; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ============ Preloader ============ */
+.preloader {
+  position: fixed; inset: 0; z-index: 120;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg);
+}
+.preloader.is-done { display: none; }
+.preloader__logo {
+  font-family: var(--font-display); font-size: clamp(2.4rem, 8vw, 5rem);
+  font-weight: 700; letter-spacing: 0.02em; overflow: hidden;
+}
+.preloader__logo span { display: inline-block; transform: translateY(110%); }
+.preloader__bar {
+  position: absolute; bottom: 0; left: 0; height: 3px; width: 100%;
+  background: var(--grad-hero); transform: scaleX(0); transform-origin: left;
+}
+
+/* ============ Header / nav ============ */
+.header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
+/* два слоя: полная шапка и облачко — crossfade без layout-анимации */
+.header__layer { transition: opacity .35s ease, transform .35s ease; will-change: opacity, transform; }
+.header__layer--bar { position: relative; }
+.header__layer--pill {
+  position: absolute; top: 0; left: 0; right: 0;
+  opacity: 0; transform: translateY(-12px); pointer-events: none;
+}
+.header.is-pill .header__layer--bar { opacity: 0; transform: translateY(-12px); pointer-events: none; }
+.header.is-pill .header__layer--pill { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+.header__inner {
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  min-height: 84px; padding: 0 24px;
+}
+.header__inner--pill {
+  width: min(880px, calc(100% - 40px));
+  margin: 14px auto 0;
+  min-height: 58px; padding: 0 20px;
+  border-radius: 999px;
+  background: rgba(250, 246, 240, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.header__inner--pill .logo { font-size: 1.15rem; }
+.header__inner--pill .nav { gap: 2px; }
+.header__inner--pill .nav a { font-size: 0.88rem; padding: 6px 12px; }
+.header__inner--pill .btn { padding: 10px 20px; font-size: 0.88rem; }
+.logo { font-family: var(--font-display); font-weight: 700; font-size: 1.35rem; letter-spacing: 0.02em; }
+.logo em { font-style: normal; color: var(--coral); }
+.nav { display: flex; align-items: center; gap: 28px; }
+.nav a {
+  font-size: 0.95rem; font-weight: 500; color: var(--ink-soft);
+  padding: 8px 14px; border-radius: 999px;
+  transition: color .25s ease, background .25s ease;
+}
+.nav a:hover { color: var(--ink); background: rgba(27, 21, 36, 0.06); }
+@media (max-width: 900px) { .nav { display: none; } }
+
+.burger { display: none; width: 44px; height: 44px; position: relative; z-index: 110; }
+.burger span {
+  position: absolute; left: 10px; right: 10px; height: 2px; background: var(--ink);
+  border-radius: 2px; transition: transform .35s cubic-bezier(0.22, 1, 0.36, 1), opacity .25s;
+}
+.burger span:nth-child(1) { top: 17px; }
+.burger span:nth-child(2) { top: 25px; }
+.burger[aria-expanded="true"] span:nth-child(1) { transform: translateY(4px) rotate(45deg); }
+.burger[aria-expanded="true"] span:nth-child(2) { transform: translateY(-4px) rotate(-45deg); }
+@media (max-width: 900px) { .burger { display: block; } }
+
+.mobile-menu {
+  position: fixed; inset: 0; z-index: 105; display: flex; flex-direction: column;
+  justify-content: center; padding: 24px;
+  background: rgba(250, 246, 240, 0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  opacity: 0; visibility: hidden; transition: opacity .4s ease, visibility .4s;
+}
+.mobile-menu.is-open { opacity: 1; visibility: visible; }
+.mobile-menu a {
+  font-family: var(--font-display); font-size: clamp(1.8rem, 8vw, 2.6rem); font-weight: 500;
+  padding: 14px 8px; border-bottom: 1px solid var(--line);
+}
+.mobile-menu__foot { margin-top: 32px; font-size: 1rem; color: var(--ink-soft); }
+
+/* ============ Buttons ============ */
+.btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 15px 30px; border-radius: 999px;
+  font-weight: 600; font-size: 1rem; line-height: 1;
+  position: relative; overflow: hidden; white-space: nowrap;
+  transition: transform .35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow .35s ease, background .35s ease;
+}
+.btn--primary { background: var(--ink); color: #fff; }
+.btn--primary::after {
+  content: ""; position: absolute; inset: 0; z-index: 0;
+  background: linear-gradient(100deg, var(--coral), var(--lavender));
+  opacity: 0; transition: opacity .35s ease;
+}
+.btn--primary:hover::after { opacity: 1; }
+.btn--primary span { position: relative; z-index: 1; }
+.btn--primary:hover { box-shadow: 0 12px 32px -10px rgba(255, 107, 74, 0.55); }
+.btn--ghost { border: 1.5px solid var(--line); color: var(--ink); background: rgba(255,255,255,0.5); }
+.btn--ghost:hover { border-color: var(--ink); transform: translateY(-2px); }
+.btn--sm { padding: 11px 22px; font-size: 0.9rem; }
+.btn--arrow svg { transition: transform .35s cubic-bezier(0.22, 1, 0.36, 1); }
+.btn--arrow:hover svg { transform: translateX(4px); }
+
+/* ============ Hero ============ */
+.hero {
+  position: relative; min-height: 100dvh;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 140px 0 80px;
+  /* нижняя часть hero набирает тот же лавандовый оттенок, что и верх services,
+     чтобы на стыке не было ступеньки цвета */
+  background: linear-gradient(180deg,
+    rgba(201, 184, 255, 0) 58%,
+    rgba(201, 184, 255, 0.10) 100%);
+}
+.blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.55; will-change: transform; pointer-events: none; }
+.blob--1 { width: 46vw; height: 46vw; min-width: 380px; min-height: 380px; top: -12%; right: -8%; background: radial-gradient(circle at 35% 35%, var(--peach), transparent 68%); }
+.blob--2 { width: 40vw; height: 40vw; min-width: 320px; min-height: 320px; bottom: -16%; left: -10%; background: radial-gradient(circle at 60% 40%, var(--lavender), transparent 66%); }
+.blob--3 { width: 26vw; height: 26vw; min-width: 220px; min-height: 220px; top: 42%; left: 34%; background: radial-gradient(circle at 50% 50%, var(--mint), transparent 64%); opacity: 0.38; }
+
+.hero__inner { position: relative; z-index: 2; }
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 9px 18px; border-radius: 999px; margin-bottom: 28px;
+  background: rgba(255, 255, 255, 0.6); border: 1px solid rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  font-size: 0.85rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft);
+}
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 0 4px rgba(159, 232, 196, 0.35); }
+.hero h1 {
+  font-size: clamp(2.5rem, 6.4vw, 5.4rem); font-weight: 600;
+  max-width: 15ch; letter-spacing: -0.01em;
+}
+.grad-text {
+  background: var(--grad-hero);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+}
+.hero__word { display: inline-block; overflow: hidden; vertical-align: bottom; margin-right: 0.28em; }
+.hero__word > span { display: inline-block; will-change: transform; }
+.hero__sub {
+  margin-top: 30px; max-width: 46ch; font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+  color: var(--ink-soft);
+}
+.hero__actions { margin-top: 42px; display: flex; flex-wrap: wrap; gap: 16px; }
+
+.hero__chips {
+  position: absolute; z-index: 2; display: none;
+}
+@media (min-width: 1100px) {
+  .hero__chips { display: flex; }
+  .chip {
+    position: absolute; display: flex; align-items: center; gap: 9px;
+    padding: 13px 20px; border-radius: 999px; font-weight: 600; font-size: 0.95rem;
+    background: rgba(255, 255, 255, 0.62); border: 1px solid rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    will-change: transform;
+  }
+  .chip i { width: 9px; height: 9px; border-radius: 50%; font-style: normal; }
+  .chip--seo { top: 24%; right: 9%; } .chip--seo i { background: var(--mint); }
+  .chip--brand { top: 58%; right: 20%; } .chip--brand i { background: var(--lavender); }
+  .chip--ads { bottom: 16%; right: 7%; } .chip--ads i { background: var(--coral); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header__layer { transition: none; }
+}
+
+/* ============ Sections ============ */
+.section { padding: clamp(80px, 10vw, 140px) 0; position: relative; }
+/* плавное перетекание из hero: блобы hero продолжаются градиентом */
+#services {
+  background: linear-gradient(180deg,
+    rgba(201, 184, 255, 0.10) 0%,
+    rgba(255, 179, 138, 0.06) 22%,
+    rgba(250, 246, 240, 0) 46%);
+}
+.section-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: clamp(44px, 6vw, 72px); }
+.section-head h2 { font-size: clamp(1.9rem, 4.4vw, 3.4rem); max-width: 16ch; }
+.section-head .lead { max-width: 40ch; color: var(--ink-soft); font-size: 1.05rem; }
+.tag {
+  display: inline-block; margin-bottom: 18px; padding: 7px 16px; border-radius: 999px;
+  font-size: 0.78rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  background: rgba(27, 21, 36, 0.05); color: var(--ink-soft);
+}
+
+/* ============ Services ============ */
+.services { display: grid; grid-template-columns: 1fr; gap: 20px; }
+@media (min-width: 900px) { .services { grid-template-columns: repeat(3, 1fr); } }
+.service-card {
+  position: relative; overflow: hidden;
+  padding: 36px 30px 40px; border-radius: var(--radius-xl);
+  background: var(--card); border: 1px solid rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  transition: transform .5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+.service-card:hover { transform: translateY(-8px); }
+.service-card::before {
+  content: ""; position: absolute; inset: 0; opacity: 0; transition: opacity .5s ease;
+  background: linear-gradient(160deg, rgba(255, 179, 138, 0.16), rgba(201, 184, 255, 0.16));
+}
+.service-card:hover::before { opacity: 1; }
+.service-card > * { position: relative; }
+.service-card__num {
+  font-family: var(--font-display); font-size: 0.85rem; font-weight: 600; color: var(--ink-faint);
+}
+.service-card h3 { font-size: 1.5rem; margin: 14px 0 20px; }
+.service-card ul { display: flex; flex-wrap: wrap; gap: 8px; }
+.service-card li {
+  padding: 8px 15px; border-radius: 999px; font-size: 0.88rem; font-weight: 500;
+  background: rgba(27, 21, 36, 0.05); transition: background .3s ease, color .3s ease;
+}
+.service-card:hover li { background: #fff; }
+.service-card__line { margin-top: 26px; height: 4px; width: 64px; border-radius: 4px; }
+.service-card:nth-child(1) .service-card__line { background: var(--coral); }
+.service-card:nth-child(2) .service-card__line { background: var(--lavender); }
+.service-card:nth-child(3) .service-card__line { background: var(--mint); }
+
+/* ============ Stats ============ */
+.stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+@media (min-width: 900px) { .stats { grid-template-columns: repeat(4, 1fr); } }
+.stat {
+  padding: 34px 26px; border-radius: var(--radius-lg); text-align: left;
+  background: var(--card-solid); border: 1px solid var(--line);
+  transition: transform .45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.stat:hover { transform: translateY(-6px) rotate(-0.6deg); }
+.stat__num { font-family: var(--font-display); font-size: clamp(2.2rem, 4vw, 3.2rem); font-weight: 600; line-height: 1; }
+.stat__label { margin-top: 10px; color: var(--ink-soft); font-size: 0.95rem; }
+.stat:nth-child(1) .stat__num { color: var(--coral); }
+.stat:nth-child(2) .stat__num { color: #7C5CFF; }
+.stat:nth-child(3) .stat__num { color: #17A05E; }
+.stat:nth-child(4) .stat__num { color: #2B7FC2; }
+
+/* ============ Cases (horizontal pin) ============ */
+.cases__swiper { padding-bottom: 16px; }
+.cases__track {
+  display: flex;
+}
+.case-card {
+  flex: 0 0 min(440px, 82vw);
+  border-radius: var(--radius-xl); overflow: hidden;
+  background: var(--card-solid); border: 1px solid var(--line);
+}
+.cases-nav { display: flex; gap: 10px; }
+.cases-nav__btn {
+  width: 52px; height: 52px; border-radius: 50%; flex: 0 0 auto;
+  border: 1.5px solid var(--line); background: #fff; color: var(--ink);
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: transform .35s cubic-bezier(0.22, 1, 0.36, 1), border-color .3s ease, opacity .3s ease;
+}
+.cases-nav__btn:hover { border-color: var(--ink); transform: translateY(-2px); }
+.cases-nav__btn.is-disabled { opacity: 0.35; pointer-events: none; }
+.case-card__visual {
+  position: relative; height: 230px; display: flex; align-items: flex-end; padding: 26px;
+  color: #fff;
+}
+.case-card--coral .case-card__visual { background: linear-gradient(135deg, #FF6B4A, #FFB38A); }
+.case-card--violet .case-card__visual { background: linear-gradient(135deg, #8E7BFF, #C9B8FF); }
+.case-card--green .case-card__visual { background: linear-gradient(135deg, #17A05E, #9FE8C4); }
+.case-card--blue .case-card__visual { background: linear-gradient(135deg, #2B7FC2, #A8D8FF); }
+.case-card--dark .case-card__visual { background: linear-gradient(135deg, #1B1524, #4A3F5C); }
+.case-card__visual h3 { font-size: 1.65rem; max-width: 12ch; }
+.case-card__visual .cases-tag {
+  position: absolute; top: 22px; left: 26px; padding: 6px 14px; border-radius: 999px;
+  font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  color: #fff; background: rgba(27, 21, 36, 0.30);
+}
+.case-card__stats { display: grid; grid-template-columns: repeat(3, 1fr); padding: 24px 26px; gap: 12px; }
+.case-card__stats dt { font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-faint); }
+.case-card__stats dd { margin: 6px 0 0; font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; }
+.cases__cta { margin-top: 44px; display: flex; justify-content: center; }
+
+/* ============ About / manifest ============ */
+.about { background: linear-gradient(180deg, transparent, rgba(201, 184, 255, 0.10), transparent); }
+.manifest { font-family: var(--font-display); font-weight: 500; font-size: clamp(1.5rem, 3.4vw, 2.7rem); line-height: 1.32; max-width: 24ch; }
+.manifest .dim { color: var(--ink-faint); transition: color .3s ease; }
+.about__grid { display: grid; gap: 48px; }
+@media (min-width: 900px) { .about__grid { grid-template-columns: 1.2fr 1fr; align-items: end; } }
+.about__side p { color: var(--ink-soft); max-width: 42ch; }
+.about__side p + p { margin-top: 18px; }
+.about__side .btn { margin-top: 30px; }
+
+/* ============ Contact ============ */
+.contact { padding-bottom: clamp(80px, 10vw, 140px); }
+.contact__panel {
+  border-radius: clamp(28px, 4vw, 48px); padding: clamp(36px, 6vw, 72px);
+  background: var(--ink); color: #fff; position: relative; overflow: hidden;
+}
+.contact__panel::before {
+  content: ""; position: absolute; width: 42vw; height: 42vw; min-width: 340px; min-height: 340px;
+  border-radius: 50%; right: -14%; top: -34%; filter: blur(80px); opacity: 0.5;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 107, 74, 0.75), transparent 66%);
+  pointer-events: none;
+}
+.contact__panel::after {
+  content: ""; position: absolute; width: 34vw; height: 34vw; min-width: 280px; min-height: 280px;
+  border-radius: 50%; left: -12%; bottom: -40%; filter: blur(80px); opacity: 0.45;
+  background: radial-gradient(circle at 50% 50%, rgba(201, 184, 255, 0.7), transparent 66%);
+  pointer-events: none;
+}
+.contact__grid { position: relative; z-index: 1; display: grid; gap: 56px; }
+@media (min-width: 900px) { .contact__grid { grid-template-columns: 1fr 1fr; } }
+.contact h2 { font-size: clamp(1.9rem, 4vw, 3.2rem); max-width: 14ch; }
+.contact__hint { margin-top: 20px; color: rgba(255, 255, 255, 0.66); max-width: 40ch; }
+.contact__links { margin-top: 36px; display: flex; flex-direction: column; gap: 14px; }
+.contact__links a {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 16px 20px; border-radius: var(--radius-md); font-weight: 600; font-size: 1.05rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  transition: background .3s ease, transform .3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.contact__links a:hover { background: rgba(255, 255, 255, 0.08); transform: translateX(6px); }
+.contact__links a span:last-child { font-weight: 400; color: rgba(255, 255, 255, 0.6); font-size: 0.92rem; }
+.form { display: flex; flex-direction: column; gap: 16px; }
+.form label { font-size: 0.85rem; font-weight: 600; color: rgba(255, 255, 255, 0.72); }
+.form input, .form textarea {
+  width: 100%; font: inherit; color: #fff; padding: 16px 18px;
+  border-radius: var(--radius-md); background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.16); resize: none;
+  transition: border-color .3s ease, background .3s ease;
+}
+.form input::placeholder, .form textarea::placeholder { color: rgba(255, 255, 255, 0.4); }
+.form input:focus, .form textarea:focus { outline: none; border-color: rgba(255, 179, 138, 0.8); background: rgba(255, 255, 255, 0.1); }
+.form .btn--light { background: #fff; color: var(--ink); justify-content: center; margin-top: 6px; }
+.form .btn--light:hover { transform: translateY(-2px); box-shadow: 0 14px 34px -12px rgba(255, 255, 255, 0.35); }
+.form__note { font-size: 0.8rem; color: rgba(255, 255, 255, 0.45); }
+.form__success {
+  display: none; padding: 20px; border-radius: var(--radius-md); text-align: center;
+  background: rgba(159, 232, 196, 0.14); border: 1px solid rgba(159, 232, 196, 0.4);
+  font-weight: 600;
+}
+.form__success.is-visible { display: block; }
+
+/* ============ Footer ============ */
+.footer { padding: 40px 0 46px; border-top: 1px solid var(--line); }
+.footer__inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; }
+.footer__links { display: flex; gap: 22px; font-size: 0.88rem; color: var(--ink-faint); }
+.footer__links a:hover { color: var(--ink); }
+.footer small { color: var(--ink-faint); }
+
+@media (max-width: 640px) {
+  body { font-size: 16px; }
+  .hero { padding-top: 120px; }
+  .hero__actions .btn { flex: 1 1 auto; justify-content: center; }
+  .case-card__stats { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Перейти к содержанию</a>
+
+<div class="preloader" id="preloader" aria-hidden="true">
+  <div class="preloader__logo" id="preloaderLogo">Randee<em style="color:var(--coral)">.</em></div>
+  <div class="preloader__bar" id="preloaderBar"></div>
+</div>
+
+<div class="noise" aria-hidden="true"></div>
+
+<header class="header" id="header">
+  <div class="header__layer header__layer--bar" data-header-layer="bar">
+    <div class="header__inner">
+      <a class="logo" href="#top" aria-label="Randee — на главную">Randee<em>.</em></a>
+      <nav class="nav" aria-label="Основная навигация">
+        <a href="#services">Услуги</a>
+        <a href="#stats">О студии</a>
+        <a href="#cases">Кейсы</a>
+        <a href="#contact">Контакты</a>
+      </nav>
+      <a class="btn btn--primary btn--sm magnetic" href="#contact"><span>Обсудить проект</span></a>
+      <button class="burger js-burger" aria-label="Открыть меню" aria-expanded="false" aria-controls="mobileMenu">
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+  <div class="header__layer header__layer--pill" data-header-layer="pill" inert>
+    <div class="header__inner header__inner--pill">
+      <a class="logo" href="#top" aria-label="Randee — на главную">Randee<em>.</em></a>
+      <nav class="nav" aria-label="Навигация в облачке">
+        <a href="#services">Услуги</a>
+        <a href="#stats">О студии</a>
+        <a href="#cases">Кейсы</a>
+        <a href="#contact">Контакты</a>
+      </nav>
+      <a class="btn btn--primary btn--sm magnetic" href="#contact"><span>Обсудить проект</span></a>
+      <button class="burger js-burger" aria-label="Открыть меню" aria-expanded="false" aria-controls="mobileMenu">
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <nav aria-label="Мобильная навигация">
+    <a href="#services">Услуги</a>
+    <a href="#stats">О студии</a>
+    <a href="#cases">Кейсы</a>
+    <a href="#contact">Контакты</a>
+  </nav>
+  <div class="mobile-menu__foot">
+    <a href="tel:+79998010277">+7 999 801-02-77</a><br>
+    <a href="mailto:info@randee.ru">info@randee.ru</a>
+  </div>
+</div>
+
+<main id="main">
+
+  <!-- ================= HERO ================= -->
+  <section class="hero" id="top">
+    <div class="blob blob--1" aria-hidden="true"></div>
+    <div class="blob blob--2" aria-hidden="true"></div>
+    <div class="blob blob--3" aria-hidden="true"></div>
+
+    <div class="container hero__inner">
+      <p class="eyebrow">Digital-студия</p>
+      <h1 id="heroTitle">Стратегии, которые превращаются в <span class="grad-text">результат</span></h1>
+      <p class="hero__sub">Мы создаём сайты, бренды и рекламные кампании, которые приносят клиентов, а не просто лайки. Комплексный маркетинг, дизайн и разработка для бизнеса любого масштаба.</p>
+      <div class="hero__actions">
+        <a class="btn btn--primary magnetic" href="#contact"><span>Обсудить проект</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a class="btn btn--ghost magnetic" href="#cases"><span>Смотреть кейсы</span></a>
+      </div>
+    </div>
+
+    <div class="hero__chips" aria-hidden="true">
+      <div class="chip chip--seo" data-float="1"><i></i>SEO-продвижение</div>
+      <div class="chip chip--brand" data-float="2"><i></i>Брендинг и дизайн</div>
+      <div class="chip chip--ads" data-float="3"><i></i>Реклама с измеримой ценой заявки</div>
+    </div>
+  </section>
+
+  <!-- ================= SERVICES ================= -->
+  <section class="section" id="services">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="tag" data-reveal>Услуги</span>
+          <h2 data-reveal>Точка входа вашего бизнеса в цифровую экосистему</h2>
+        </div>
+        <p class="lead" data-reveal>Три направления, один результат — стабильный поток клиентов. Мы не просто делаем красиво. Мы делаем эффективно.</p>
+      </div>
+      <div class="services">
+        <article class="service-card" data-reveal>
+          <span class="service-card__num">01</span>
+          <h3>Сайты</h3>
+          <ul>
+            <li>Лендинг</li><li>Промо-сайт</li><li>Корпоративный сайт</li>
+            <li>Интернет-магазин</li><li>Сайт-каталог</li><li>Сайт-визитка</li>
+          </ul>
+          <div class="service-card__line"></div>
+        </article>
+        <article class="service-card" data-reveal>
+          <span class="service-card__num">02</span>
+          <h3>Маркетинг</h3>
+          <ul>
+            <li>Контекстная реклама</li><li>SEO-продвижение</li><li>ГЕО-реклама</li>
+            <li>Таргетированная реклама</li><li>SMM</li><li>Комплексный маркетинг</li>
+          </ul>
+          <div class="service-card__line"></div>
+        </article>
+        <article class="service-card" data-reveal>
+          <span class="service-card__num">03</span>
+          <h3>Брендинг</h3>
+          <ul>
+            <li>Нейминг</li><li>Логотип</li><li>Фирменный стиль</li>
+            <li>Гайдбук</li><li>Дизайн-концепция</li><li>Айдентика</li>
+          </ul>
+          <div class="service-card__line"></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= STATS ================= -->
+  <section class="section" id="stats" style="padding-top: 0;">
+    <div class="container">
+      <span class="tag" data-reveal>Цифры</span>
+      <div class="section-head" style="margin-bottom: 40px;">
+        <h2 data-reveal>Опыт, проверенный гипотезами</h2>
+      </div>
+      <div class="stats">
+        <div class="stat" data-reveal><div class="stat__num">10 лет</div><div class="stat__label">лет опыта в digital</div></div>
+        <div class="stat" data-reveal><div class="stat__num">50+</div><div class="stat__label">успешных проектов</div></div>
+        <div class="stat" data-reveal><div class="stat__num">30+</div><div class="stat__label">сайтов в топе поиска</div></div>
+        <div class="stat" data-reveal><div class="stat__num">1 000+</div><div class="stat__label">протестировано гипотез</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CASES ================= -->
+  <section class="section cases" id="cases">
+    <div class="container section-head">
+      <div>
+        <span class="tag" data-reveal>Кейсы</span>
+        <h2 data-reveal>Результат в цифрах, а не в обещаниях</h2>
+      </div>
+      <p class="lead" data-reveal>Каждый проект — это измеримая стоимость заявки и предсказуемый срок. Листайте, чтобы увидеть ниши.</p>
+      <div class="cases-nav">
+        <button class="cases-nav__btn" id="casesPrev" type="button" aria-label="Предыдущий кейс">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M14 8H3M7 3.5 2.5 8 7 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="cases-nav__btn" id="casesNext" type="button" aria-label="Следующий кейс">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="cases__swiper swiper">
+      <div class="cases__track swiper-wrapper" id="casesTrack">
+        <article class="case-card case-card--coral swiper-slide">
+          <div class="case-card__visual">
+            <span class="cases-tag">Строительство</span>
+            <h3>Сайт для строительства домов</h3>
+          </div>
+          <dl class="case-card__stats">
+            <div><dt>Заявок</dt><dd>132</dd></div>
+            <div><dt>Срок</dt><dd>4 месяца</dd></div>
+            <div><dt>Цена заявки</dt><dd>2 194 ₽</dd></div>
+          </dl>
+        </article>
+        <article class="case-card case-card--violet swiper-slide">
+          <div class="case-card__visual">
+            <span class="cases-tag">Фитнес-клуб</span>
+            <h3>Комплекс услуг Sportmax</h3>
+          </div>
+          <dl class="case-card__stats">
+            <div><dt>Заявок</dt><dd>126</dd></div>
+            <div><dt>Срок</dt><dd>2 месяца</dd></div>
+            <div><dt>Цена заявки</dt><dd>414 ₽</dd></div>
+          </dl>
+        </article>
+        <article class="case-card case-card--green swiper-slide">
+          <div class="case-card__visual">
+            <span class="cases-tag">Стоматология</span>
+            <h3>Заявки для стоматологии</h3>
+          </div>
+          <dl class="case-card__stats">
+            <div><dt>Заявок</dt><dd>88</dd></div>
+            <div><dt>Срок</dt><dd>2 месяца</dd></div>
+            <div><dt>Цена заявки</dt><dd>1 047 ₽</dd></div>
+          </dl>
+        </article>
+        <article class="case-card case-card--blue swiper-slide">
+          <div class="case-card__visual">
+            <span class="cases-tag">Гостиницы / отели</span>
+            <h3>Загрузка отелей круглый год</h3>
+          </div>
+          <dl class="case-card__stats">
+            <div><dt>Заявок</dt><dd>432</dd></div>
+            <div><dt>Срок</dt><dd>3 месяца</dd></div>
+            <div><dt>Цена заявки</dt><dd>876 ₽</dd></div>
+          </dl>
+        </article>
+        <article class="case-card case-card--dark swiper-slide">
+          <div class="case-card__visual">
+            <span class="cases-tag">Ваша ниша</span>
+            <h3>Не увидели свою нишу?</h3>
+          </div>
+          <div style="padding: 26px;">
+            <a class="btn btn--ghost" href="#contact" style="width: 100%; justify-content: center;"><span>Обсудить ваш проект</span></a>
+          </div>
+        </article>
+      </div>
+    </div>
+    <div class="container cases__cta">
+      <a class="btn btn--primary magnetic" href="#contact"><span>Получить консультацию</span>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- ================= ABOUT ================= -->
+  <section class="section about" id="about">
+    <div class="container about__grid">
+      <div>
+        <span class="tag" data-reveal>О студии</span>
+        <p class="manifest" data-reveal-lines>
+          <span class="dim">Randee — это команда маркетологов, дизайнеров и разработчиков,</span>
+          которые помогают компаниям расти и находить клиентов в любой точке мира.
+        </p>
+      </div>
+      <div class="about__side" data-reveal>
+        <p>Мы объединяем стратегию, дизайн и технологии, чтобы каждый проект приносил измеримый результат. Наши стратегии основаны на аналитике и реальных данных, а не на догадках.</p>
+        <p>Разрабатываем сайты под ключ с SEO и адаптацией под рекламу. Создаём бренды и визуальные системы, чтобы бизнес выглядел профессионально и вызывал доверие.</p>
+        <a class="btn btn--ghost magnetic" href="#contact"><span>Скачать презентацию</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CONTACT ================= -->
+  <section class="section contact" id="contact">
+    <div class="container">
+      <div class="contact__panel" data-reveal>
+        <div class="contact__grid">
+          <div>
+            <h2>Начнём с разговора о вашей задаче</h2>
+            <p class="contact__hint">Оставьте заявку — вернёмся с планом и оценкой в течение рабочего дня. Или напишите напрямую, как удобно.</p>
+            <div class="contact__links">
+              <a href="tel:+79998010277"><span>+7 999 801-02-77</span><span>позвонить</span></a>
+              <a href="https://t.me/randeeru" target="_blank" rel="noopener"><span>Telegram</span><span>@randeeru</span></a>
+              <a href="https://wa.me/+79998010277" target="_blank" rel="noopener"><span>WhatsApp</span><span>написать</span></a>
+              <a href="mailto:info@randee.ru"><span>info@randee.ru</span><span>почта</span></a>
+            </div>
+          </div>
+          <form class="form" id="contactForm" novalidate>
+            <div>
+              <label for="fName">Ваше имя</label>
+              <input id="fName" name="name" type="text" placeholder="Как к вам обращаться" autocomplete="name" required>
+            </div>
+            <div>
+              <label for="fContact">Телефон или Telegram</label>
+              <input id="fContact" name="contact" type="text" placeholder="+7 ___ ___-__-__ или @username" required>
+            </div>
+            <div>
+              <label for="fTask">Задача</label>
+              <textarea id="fTask" name="task" rows="4" placeholder="Коротко о проекте: ниша, цель, сроки"></textarea>
+            </div>
+            <button class="btn btn--light magnetic" type="submit"><span>Получить консультацию</span></button>
+            <p class="form__note">Нажимая кнопку, вы соглашаетесь с политикой обработки персональных данных.</p>
+            <div class="form__success" id="formSuccess" role="status">Спасибо! Заявка отправлена — свяжемся с вами в течение рабочего дня.</div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <a class="logo" href="#top">Randee<em>.</em></a>
+    <div class="footer__links">
+      <a href="#top">Главная</a>
+      <a href="#services">Услуги</a>
+      <a href="#cases">Кейсы</a>
+    </div>
+    <small>© 2025 Randee Digital. Все права защищены.</small>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="vendor/swiper-bundle.min.js"></script>
+<script id="app">
+/*APP_JS*/
+(function () {
+  'use strict';
+
+  document.documentElement.classList.add('js');
+
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hasGsap = typeof window.gsap !== 'undefined';
+  const preloader = document.getElementById('preloader');
+  const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+  const hidePreloaderFallback = () => { if (preloader) preloader.classList.add('is-done'); };
+
+  /* ---------- Pure helpers ---------- */
+
+  function wrapWord(content) {
+    const outer = document.createElement('span');
+    outer.className = 'hero__word';
+    const inner = document.createElement('span');
+    if (typeof content === 'string') { inner.textContent = content; }
+    else { inner.appendChild(content.cloneNode(true)); }
+    outer.appendChild(inner);
+    return { outer, inner };
+  }
+
+  function splitIntoWords(el) {
+    const nodes = Array.from(el.childNodes);
+    el.textContent = '';
+    const inners = [];
+    nodes.forEach((node) => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        node.textContent.split(/\s+/).filter(Boolean).forEach((word) => {
+          const { outer, inner } = wrapWord(word);
+          el.appendChild(outer);
+          inners.push(inner);
+        });
+      } else if (node.nodeType === Node.ELEMENT_NODE) {
+        const { outer, inner } = wrapWord(node);
+        el.appendChild(outer);
+        inners.push(inner);
+      }
+    });
+    return inners;
+  }
+
+  function scrollToTarget(hash) {
+    const target = document.querySelector(hash);
+    if (!target) return;
+    target.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+  }
+
+  function initAnchors() {
+    document.querySelectorAll('a[href^="#"]').forEach((link) => {
+      link.addEventListener('click', (event) => {
+        const hash = link.getAttribute('href');
+        if (hash.length < 2) return;
+        event.preventDefault();
+        scrollToTarget(hash);
+        closeMobileMenu();
+      });
+    });
+  }
+
+  /* ---------- Preloader ---------- */
+  function runPreloader() {
+    const logo = document.getElementById('preloaderLogo');
+    const bar = document.getElementById('preloaderBar');
+    if (!hasGsap || prefersReducedMotion || !preloader) { hidePreloaderFallback(); return; }
+    const letters = logo.textContent.split('');
+    logo.innerHTML = letters.map((ch, i) => {
+      const color = (i === letters.length - 1 && ch === '.') ? ' style="color:var(--coral)"' : '';
+      const glyph = ch === ' ' ? '&nbsp;' : ch;
+      return `<span${color}>${glyph}</span>`;
+    }).join('');
+    const tl = window.gsap.timeline();
+    tl.to(logo.children, { y: 0, duration: 0.7, stagger: 0.05, ease: 'power3.out' })
+      .to(bar, { scaleX: 1, duration: 0.9, ease: 'power2.inOut' }, '-=0.4')
+      .to(logo.children, { y: '-110%', duration: 0.5, stagger: 0.03, ease: 'power2.in' })
+      .to(preloader, { yPercent: -100, duration: 0.7, ease: 'expo.inOut',
+        onStart: () => preloader.style.borderBottomLeftRadius = '50% 6%',
+        onComplete: () => { preloader.classList.add('is-done'); playHeroIntro(); } }, '-=0.15');
+  }
+
+  /* ---------- Hero intro ---------- */
+  let heroWords = null;
+  let heroIntroStarted = false;
+
+  /* применяется сразу при загрузке — до того, как шторка прелоадера поднимется */
+  function prepareHero() {
+    if (!hasGsap || prefersReducedMotion || heroWords) return false;
+    const title = document.getElementById('heroTitle');
+    heroWords = splitIntoWords(title);
+    window.gsap.set('.hero__sub, .hero__actions, .eyebrow, .hero__chips .chip', { opacity: 0, y: 24 });
+    window.gsap.set(heroWords, { yPercent: 115 });
+    return true;
+  }
+
+  function playHeroIntro() {
+    if (!hasGsap || prefersReducedMotion) return;
+    heroIntroStarted = true;
+    if (!heroWords) { prepareHero(); }
+    const gsap = window.gsap;
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    tl.to('.eyebrow', { opacity: 1, y: 0, duration: 0.6 })
+      .to(heroWords, { yPercent: 0, duration: 0.85, stagger: 0.05 }, '-=0.35')
+      .to('.hero__sub', { opacity: 1, y: 0, duration: 0.7 }, '-=0.45')
+      .to('.hero__actions', { opacity: 1, y: 0, duration: 0.7 }, '-=0.5')
+      .to('.hero__chips .chip', { opacity: 1, y: 0, duration: 0.7, stagger: 0.12 }, '-=0.4');
+
+    document.querySelectorAll('.chip').forEach((chip, i) => {
+      gsap.to(chip, {
+        y: () => 14 + i * 4, duration: 2.4 + i * 0.5,
+        yoyo: true, repeat: -1, ease: 'sine.inOut', delay: i * 0.4,
+      });
+    });
+  }
+
+  /* ---------- Background blobs drift ---------- */
+  function initBlobs() {
+    if (!hasGsap || prefersReducedMotion) return;
+    document.querySelectorAll('.blob').forEach((blob, i) => {
+      window.gsap.to(blob, {
+        x: () => (i % 2 ? 60 : -60) * (1 + i * 0.3),
+        y: () => (i % 2 ? -50 : 50),
+        duration: 9 + i * 2.5, yoyo: true, repeat: -1, ease: 'sine.inOut',
+      });
+    });
+  }
+
+  /* ---------- Header pill on scroll ---------- */
+  function initHeader() {
+    const header = document.getElementById('header');
+    const bar = header.querySelector('[data-header-layer="bar"]');
+    const pill = header.querySelector('[data-header-layer="pill"]');
+    if (!bar || !pill) return;
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const pillMode = window.scrollY >= 60;
+      header.classList.toggle('is-pill', pillMode);
+      bar.inert = pillMode;
+      pill.inert = !pillMode;
+      bar.setAttribute('aria-hidden', String(pillMode));
+      pill.setAttribute('aria-hidden', String(!pillMode));
+    };
+    window.addEventListener('scroll', () => {
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
+    }, { passive: true });
+    update();
+  }
+
+  /* ---------- Mobile menu ---------- */
+  const mobileMenu = document.getElementById('mobileMenu');
+
+  function setMenuState(open) {
+    if (!mobileMenu) return;
+    document.querySelectorAll('.js-burger').forEach((b) => {
+      b.setAttribute('aria-expanded', String(open));
+    });
+    mobileMenu.classList.toggle('is-open', open);
+    mobileMenu.setAttribute('aria-hidden', String(!open));
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+
+  function closeMobileMenu() {
+    setMenuState(false);
+  }
+
+  function initMobileMenu() {
+    if (!mobileMenu) return;
+    document.querySelectorAll('.js-burger').forEach((burger) => {
+      burger.addEventListener('click', () => {
+        setMenuState(burger.getAttribute('aria-expanded') !== 'true');
+      });
+    });
+    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMobileMenu(); });
+  }
+
+  /* ---------- Cases carousel (Swiper) ---------- */
+  function initCasesSwiper() {
+    const container = document.querySelector('.cases__swiper');
+    if (!container || typeof window.Swiper === 'undefined') return;
+
+    const gutter = Math.max(24, (window.innerWidth - 1240) / 2);
+    new window.Swiper(container, {
+      slidesPerView: 'auto',
+      spaceBetween: 22,
+      grabCursor: true,
+      freeMode: { enabled: true, momentumBounce: false },
+      slidesOffsetBefore: gutter,
+      slidesOffsetAfter: gutter,
+      navigation: {
+        nextEl: '#casesNext',
+        prevEl: '#casesPrev',
+        disabledClass: 'is-disabled',
+      },
+      keyboard: { enabled: true, onlyInViewport: true },
+      a11y: { enabled: true },
+    });
+  }
+
+  /* ---------- Magnetic buttons ---------- */
+  function initMagnetic() {
+    if (!isFinePointer || prefersReducedMotion || !hasGsap) return;
+    const gsap = window.gsap;
+    document.querySelectorAll('.magnetic').forEach((el) => {
+      const strength = 0.28;
+      el.addEventListener('mousemove', (e) => {
+        const rect = el.getBoundingClientRect();
+        const dx = e.clientX - (rect.left + rect.width / 2);
+        const dy = e.clientY - (rect.top + rect.height / 2);
+        gsap.to(el, { x: dx * strength, y: dy * strength, duration: 0.4, ease: 'power2.out' });
+      });
+      el.addEventListener('mouseleave', () => {
+        gsap.to(el, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1, 0.4)' });
+      });
+    });
+  }
+
+  /* ---------- Contact form ---------- */
+  function initForm() {
+    const form = document.getElementById('contactForm');
+    const success = document.getElementById('formSuccess');
+    if (!form || !success) return;
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = form.elements.name.value.trim();
+      const contact = form.elements.contact.value.trim();
+      if (!name || !contact) {
+        [form.elements.name, form.elements.contact].forEach((f) => {
+          if (!f.value.trim()) { f.style.borderColor = 'rgba(255, 107, 74, 0.9)'; }
+        });
+        return;
+      }
+      success.classList.add('is-visible');
+      form.reset();
+      setTimeout(() => success.classList.remove('is-visible'), 6000);
+    });
+  }
+
+  /* ---------- Boot ---------- */
+  function boot() {
+    prepareHero();
+    initAnchors();
+    initHeader();
+    initMobileMenu();
+    initCasesSwiper();
+    initMagnetic();
+    initForm();
+    initBlobs();
+    runPreloader();
+
+    /* сторож: если intro так и не стартовал — принудительно показать hero-контент */
+    setTimeout(() => {
+      if (heroIntroStarted || !hasGsap || prefersReducedMotion) return;
+      window.gsap.set(
+        '.hero__sub, .hero__actions, .eyebrow, .hero__chips .chip, .hero__word > span',
+        { clearProps: 'all' }
+      );
+    }, 5000);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+
+  /* Safety: never leave user stuck on the preloader */
+  setTimeout(hidePreloaderFallback, 4000);
+})();
+/*END_APP_JS*/
+</script>
+</body>
+</html>
