@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Randee — digital-студия: сайты, брендинг и маркетинг</title>
 <meta name="description" content="Digital-студия Randee создаёт сайты, бренды и рекламные кампании, которые приносят клиентов, а не просто лайки.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,7 +35,7 @@
 
 /* ============ Reset / base ============ */
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
   font-family: var(--font-body);
@@ -44,6 +44,7 @@ body {
   color: var(--ink);
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
   overflow-x: hidden;
 }
 img, svg { display: block; max-width: 100%; }
@@ -53,6 +54,9 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 600; line-height
 p { margin: 0; }
 ul { margin: 0; padding: 0; list-style: none; }
 :focus-visible { outline: 2px solid var(--coral); outline-offset: 3px; border-radius: 4px; }
+
+/* якорные секции не уезжают под фиксированную шапку */
+#services, #stats, #cases, #about, #contact { scroll-margin-top: 96px; }
 
 .skip-link {
   position: fixed; top: -60px; left: 16px; z-index: 200;
@@ -73,8 +77,10 @@ ul { margin: 0; padding: 0; list-style: none; }
 
 /* ============ Preloader ============ */
 .preloader {
-  position: fixed; inset: 0; z-index: 120;
-  display: flex; align-items: center; justify-content: center;
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100vh; height: 100svh;
+  z-index: 120;
+  display: grid; place-items: center;
   background: var(--bg);
 }
 .preloader.is-done { display: none; }
@@ -91,7 +97,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 /* ============ Header / nav ============ */
 .header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
 /* два слоя: полная шапка и облачко — crossfade без layout-анимации */
-.header__layer { transition: opacity .35s ease, transform .35s ease; will-change: opacity, transform; }
+.header__layer { transition: opacity .3s ease, transform .3s ease; will-change: opacity, transform; }
 .header__layer--bar { position: relative; }
 .header__layer--pill {
   position: absolute; top: 0; left: 0; right: 0;
@@ -117,6 +123,19 @@ ul { margin: 0; padding: 0; list-style: none; }
 .header__inner--pill .nav { gap: 2px; }
 .header__inner--pill .nav a { font-size: 0.88rem; padding: 6px 12px; }
 .header__inner--pill .btn { padding: 10px 20px; font-size: 0.88rem; }
+/* на мобиле контент облачка стоит ровно на тех же координатах, что и в полной шапке —
+   crossfade без «двоения» и смещений */
+@media (max-width: 899px) {
+  .header__inner--pill {
+    width: calc(100% - 24px);
+    margin: 13px auto 0;
+    padding: 0 12px;
+  }
+}
+@media (max-width: 520px) {
+  .header__inner { gap: 12px; }
+  .header__inner .btn { padding: 9px 14px; font-size: 0.82rem; }
+}
 .logo { font-family: var(--font-display); font-weight: 700; font-size: 1.35rem; letter-spacing: 0.02em; }
 .logo em { font-style: normal; color: var(--coral); }
 .nav { display: flex; align-items: center; gap: 28px; }
@@ -140,17 +159,51 @@ ul { margin: 0; padding: 0; list-style: none; }
 @media (max-width: 900px) { .burger { display: block; } }
 
 .mobile-menu {
-  position: fixed; inset: 0; z-index: 105; display: flex; flex-direction: column;
-  justify-content: center; padding: 24px;
-  background: rgba(250, 246, 240, 0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  opacity: 0; visibility: hidden; transition: opacity .4s ease, visibility .4s;
+  position: fixed; inset: 0; z-index: 105;
+  display: flex; flex-direction: column;
+  padding: calc(74px + 38px) 20px 28px;
+  background: rgba(250, 246, 240, 0.94); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  opacity: 0; visibility: hidden; transition: opacity .35s ease, visibility .35s;
+}.mobile-menu.is-open { opacity: 1; visibility: visible; }
+.mobile-menu__close {
+  position: absolute; top: 20px; right: 20px; z-index: 106;
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255, 255, 255, 0.72); border: 1px solid var(--line); color: var(--ink);
+  transition: transform .3s cubic-bezier(0.22, 1, 0.36, 1), background .25s ease;
 }
-.mobile-menu.is-open { opacity: 1; visibility: visible; }
-.mobile-menu a {
-  font-family: var(--font-display); font-size: clamp(1.8rem, 8vw, 2.6rem); font-weight: 500;
-  padding: 14px 8px; border-bottom: 1px solid var(--line);
+.mobile-menu__close:hover { background: #fff; }
+.mobile-menu__close:active { transform: scale(0.92); }
+.mobile-menu__nav { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+.mobile-menu__nav a {
+  font-family: var(--font-display); font-size: clamp(1.05rem, 4.5vw, 1.35rem); font-weight: 500;
+  padding: 14px 22px; border-radius: 999px;
+  background: rgba(255, 255, 255, 0.66); border: 1px solid rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  opacity: 0; transform: translateY(-10px);
+  transition: opacity .3s ease, transform .3s ease, background .2s ease;
 }
-.mobile-menu__foot { margin-top: 32px; font-size: 1rem; color: var(--ink-soft); }
+.mobile-menu.is-open .mobile-menu__nav a { opacity: 1; transform: none; }
+.mobile-menu.is-open .mobile-menu__nav a:nth-child(1) { transition-delay: .06s; }
+.mobile-menu.is-open .mobile-menu__nav a:nth-child(2) { transition-delay: .11s; }
+.mobile-menu.is-open .mobile-menu__nav a:nth-child(3) { transition-delay: .16s; }
+.mobile-menu.is-open .mobile-menu__nav a:nth-child(4) { transition-delay: .21s; }
+.mobile-menu__nav a:active { background: #fff; transform: scale(0.96); }
+.mobile-menu__foot {
+  margin-top: 44px; display: flex; flex-direction: column; gap: 20px;
+  font-size: 1rem; color: var(--ink-soft);
+}
+.mobile-menu__foot .btn { justify-content: center; }
+.mobile-menu__contacts a { display: block; padding: 7px 0; color: var(--ink-soft); font-size: 1.05rem; font-weight: 500; }
+.mobile-menu__contacts a:hover { color: var(--ink); }
+.mobile-menu__socials { display: flex; gap: 10px; }
+/* соц-пилюли в меню — светлая тема (footer__social по умолчанию тёмный) */
+.mobile-menu__socials .footer__social {
+  color: var(--ink); background: rgba(255, 255, 255, 0.55); border-color: var(--line);
+}
+.mobile-menu__socials .footer__social:hover {
+  background: #fff; border-color: var(--ink); transform: translateY(-2px);
+}
 
 /* ============ Buttons ============ */
 .btn {
@@ -174,10 +227,11 @@ ul { margin: 0; padding: 0; list-style: none; }
 .btn--sm { padding: 11px 22px; font-size: 0.9rem; }
 .btn--arrow svg { transition: transform .35s cubic-bezier(0.22, 1, 0.36, 1); }
 .btn--arrow:hover svg { transform: translateX(4px); }
+.btn:active { transform: scale(0.97); }
 
 /* ============ Hero ============ */
 .hero {
-  position: relative; min-height: 100dvh;
+  position: relative; min-height: 100vh; min-height: 100svh;
   display: flex; flex-direction: column; justify-content: center;
   padding: 140px 0 80px;
   /* нижняя часть hero набирает тот же лавандовый оттенок, что и верх services,
@@ -218,21 +272,28 @@ ul { margin: 0; padding: 0; list-style: none; }
 .hero__actions { margin-top: 42px; display: flex; flex-wrap: wrap; gap: 16px; }
 
 .hero__chips {
-  position: absolute; z-index: 2; display: none;
+  position: relative; z-index: 2;
+  display: flex; flex-wrap: wrap; gap: 10px;
+  width: min(1240px, 100% - 48px);
+  margin: 36px auto 0;
 }
+.chip {
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 11px 18px; border-radius: 999px; font-weight: 600; font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.62); border: 1px solid rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+}
+.chip i { width: 9px; height: 9px; border-radius: 50%; font-style: normal; }
+.chip--seo i { background: var(--mint); }
+.chip--brand i { background: var(--lavender); }
+.chip--ads i { background: var(--coral); }
 @media (min-width: 1100px) {
-  .hero__chips { display: flex; }
-  .chip {
-    position: absolute; display: flex; align-items: center; gap: 9px;
-    padding: 13px 20px; border-radius: 999px; font-weight: 600; font-size: 0.95rem;
-    background: rgba(255, 255, 255, 0.62); border: 1px solid rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    will-change: transform;
-  }
-  .chip i { width: 9px; height: 9px; border-radius: 50%; font-style: normal; }
-  .chip--seo { top: 24%; right: 9%; } .chip--seo i { background: var(--mint); }
-  .chip--brand { top: 58%; right: 20%; } .chip--brand i { background: var(--lavender); }
-  .chip--ads { bottom: 16%; right: 7%; } .chip--ads i { background: var(--coral); }
+  /* на десктопе чипы плавают свободно поверх hero */
+  .hero__chips { position: absolute; inset: 0; margin: 0; width: auto; pointer-events: none; }
+  .chip { position: absolute; pointer-events: auto; padding: 13px 20px; font-size: 0.95rem; }
+  .chip--seo { top: 24%; right: 9%; }
+  .chip--brand { top: 58%; right: 20%; }
+  .chip--ads { bottom: 16%; right: 7%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -324,6 +385,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   transition: transform .35s cubic-bezier(0.22, 1, 0.36, 1), border-color .3s ease, opacity .3s ease;
 }
 .cases-nav__btn:hover { border-color: var(--ink); transform: translateY(-2px); }
+.cases-nav__btn:active { transform: scale(0.94); }
 .cases-nav__btn.is-disabled { opacity: 0.35; pointer-events: none; }
 .case-card__visual {
   position: relative; height: 230px; display: flex; align-items: flex-end; padding: 26px;
@@ -407,7 +469,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .form__success.is-visible { display: block; }
 
 /* ============ Footer (rounded card, inset from body) ============ */
-.footer { padding: 0 clamp(16px, 3vw, 40px) clamp(16px, 3vw, 40px); }
+.footer { padding: 0 clamp(16px, 3vw, 40px) calc(clamp(16px, 3vw, 40px) + env(safe-area-inset-bottom)); }
 .footer__card {
   position: relative; overflow: hidden;
   border-radius: clamp(28px, 4vw, 48px);
@@ -429,6 +491,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   transition: border-color .3s ease, background .3s ease, transform .3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .footer__social:hover { border-color: rgba(255, 255, 255, 0.4); background: rgba(255, 255, 255, 0.12); transform: translateY(-2px); }
+.footer__social:active { transform: scale(0.97); }
 .footer__col-title {
   font-family: var(--font-body); font-size: 0.78rem; font-weight: 600;
   letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255, 255, 255, 0.45);
@@ -454,9 +517,17 @@ ul { margin: 0; padding: 0; list-style: none; }
 
 @media (max-width: 640px) {
   body { font-size: 16px; }
-  .hero { padding-top: 120px; }
+  .section { padding: 72px 0; }
+  .section-head { margin-bottom: 36px; }
+  .hero { padding: 116px 0 48px; }
+  .hero__actions { margin-top: 32px; }
   .hero__actions .btn { flex: 1 1 auto; justify-content: center; }
+  .blob { filter: blur(48px); }
+  .hero__chips { width: calc(100% - 40px); }
+  .stat { padding: 26px 20px; }
   .case-card__stats { grid-template-columns: 1fr 1fr; }
+  .contact__panel { border-radius: 24px; }
+  .footer__card { border-radius: 24px; }
 }
 </style>
 </head>
@@ -480,7 +551,7 @@ ul { margin: 0; padding: 0; list-style: none; }
         <a href="#cases">Кейсы</a>
         <a href="#contact">Контакты</a>
       </nav>
-      <a class="btn btn--primary btn--sm magnetic" href="#contact"><span>Обсудить проект</span></a>
+      <a class="btn btn--primary btn--sm" href="#contact"><span>Обсудить проект</span></a>
       <button class="burger js-burger" aria-label="Открыть меню" aria-expanded="false" aria-controls="mobileMenu">
         <span></span><span></span>
       </button>
@@ -495,7 +566,7 @@ ul { margin: 0; padding: 0; list-style: none; }
         <a href="#cases">Кейсы</a>
         <a href="#contact">Контакты</a>
       </nav>
-      <a class="btn btn--primary btn--sm magnetic" href="#contact"><span>Обсудить проект</span></a>
+      <a class="btn btn--primary btn--sm" href="#contact"><span>Обсудить проект</span></a>
       <button class="burger js-burger" aria-label="Открыть меню" aria-expanded="false" aria-controls="mobileMenu">
         <span></span><span></span>
       </button>
@@ -504,15 +575,25 @@ ul { margin: 0; padding: 0; list-style: none; }
 </header>
 
 <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
-  <nav aria-label="Мобильная навигация">
+  <button class="mobile-menu__close" type="button" aria-label="Закрыть меню">
+    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 3l10 10M13 3 3 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+  </button>
+  <nav class="mobile-menu__nav" aria-label="Мобильная навигация">
     <a href="#services">Услуги</a>
     <a href="#stats">О студии</a>
     <a href="#cases">Кейсы</a>
     <a href="#contact">Контакты</a>
   </nav>
   <div class="mobile-menu__foot">
-    <a href="tel:+79998010277">+7 999 801-02-77</a><br>
-    <a href="mailto:info@randee.ru">info@randee.ru</a>
+    <a class="btn btn--primary" href="#contact"><span>Обсудить проект</span></a>
+    <div class="mobile-menu__contacts">
+      <a href="tel:+79998010277">+7 999 801-02-77</a>
+      <a href="mailto:info@randee.ru">info@randee.ru</a>
+    </div>
+    <div class="mobile-menu__socials">
+      <a class="footer__social" href="https://t.me/randeeru" target="_blank" rel="noopener">Telegram</a>
+      <a class="footer__social" href="https://wa.me/+79998010277" target="_blank" rel="noopener">WhatsApp</a>
+    </div>
   </div>
 </div>
 
@@ -529,10 +610,10 @@ ul { margin: 0; padding: 0; list-style: none; }
       <h1 id="heroTitle">Стратегии, которые превращаются в <span class="grad-text">результат</span></h1>
       <p class="hero__sub">Мы создаём сайты, бренды и рекламные кампании, которые приносят клиентов, а не просто лайки. Комплексный маркетинг, дизайн и разработка для бизнеса любого масштаба.</p>
       <div class="hero__actions">
-        <a class="btn btn--primary magnetic" href="#contact"><span>Обсудить проект</span>
+        <a class="btn btn--primary" href="#contact"><span>Обсудить проект</span>
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
-        <a class="btn btn--ghost magnetic" href="#cases"><span>Смотреть кейсы</span></a>
+        <a class="btn btn--ghost" href="#cases"><span>Смотреть кейсы</span></a>
       </div>
     </div>
 
@@ -676,7 +757,7 @@ ul { margin: 0; padding: 0; list-style: none; }
       </div>
     </div>
     <div class="container cases__cta">
-      <a class="btn btn--primary magnetic" href="#contact"><span>Получить консультацию</span>
+      <a class="btn btn--primary" href="#contact"><span>Получить консультацию</span>
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
     </div>
@@ -695,7 +776,7 @@ ul { margin: 0; padding: 0; list-style: none; }
       <div class="about__side" data-reveal>
         <p>Мы объединяем стратегию, дизайн и технологии, чтобы каждый проект приносил измеримый результат. Наши стратегии основаны на аналитике и реальных данных, а не на догадках.</p>
         <p>Разрабатываем сайты под ключ с SEO и адаптацией под рекламу. Создаём бренды и визуальные системы, чтобы бизнес выглядел профессионально и вызывал доверие.</p>
-        <a class="btn btn--ghost magnetic" href="#contact"><span>Скачать презентацию</span></a>
+        <a class="btn btn--ghost" href="#contact"><span>Скачать презентацию</span></a>
       </div>
     </div>
   </section>
@@ -728,7 +809,7 @@ ul { margin: 0; padding: 0; list-style: none; }
               <label for="fTask">Задача</label>
               <textarea id="fTask" name="task" rows="4" placeholder="Коротко о проекте: ниша, цель, сроки"></textarea>
             </div>
-            <button class="btn btn--light magnetic" type="submit"><span>Получить консультацию</span></button>
+            <button class="btn btn--light" type="submit"><span>Получить консультацию</span></button>
             <p class="form__note">Нажимая кнопку, вы соглашаетесь с политикой обработки персональных данных.</p>
             <div class="form__success" id="formSuccess" role="status">Спасибо! Заявка отправлена — свяжемся с вами в течение рабочего дня.</div>
           </form>
@@ -894,12 +975,15 @@ ul { margin: 0; padding: 0; list-style: none; }
       .to('.hero__actions', { opacity: 1, y: 0, duration: 0.7 }, '-=0.5')
       .to('.hero__chips .chip', { opacity: 1, y: 0, duration: 0.7, stagger: 0.12 }, '-=0.4');
 
-    document.querySelectorAll('.chip').forEach((chip, i) => {
-      gsap.to(chip, {
-        y: () => 14 + i * 4, duration: 2.4 + i * 0.5,
-        yoyo: true, repeat: -1, ease: 'sine.inOut', delay: i * 0.4,
+    const isDesktopLayout = window.matchMedia('(min-width: 1100px)').matches;
+    if (isDesktopLayout) {
+      document.querySelectorAll('.chip').forEach((chip, i) => {
+        gsap.to(chip, {
+          y: () => 14 + i * 4, duration: 2.4 + i * 0.5,
+          yoyo: true, repeat: -1, ease: 'sine.inOut', delay: i * 0.4,
+        });
       });
-    });
+    }
   }
 
   /* ---------- Background blobs drift ---------- */
@@ -960,6 +1044,8 @@ ul { margin: 0; padding: 0; list-style: none; }
         setMenuState(burger.getAttribute('aria-expanded') !== 'true');
       });
     });
+    const closeBtn = document.querySelector('.mobile-menu__close');
+    if (closeBtn) { closeBtn.addEventListener('click', closeMobileMenu); }
     window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMobileMenu(); });
   }
 
@@ -969,7 +1055,7 @@ ul { margin: 0; padding: 0; list-style: none; }
     if (!container || typeof window.Swiper === 'undefined') return;
 
     const gutter = Math.max(24, (window.innerWidth - 1240) / 2);
-    new window.Swiper(container, {
+    const swiper = new window.Swiper(container, {
       slidesPerView: 'auto',
       spaceBetween: 22,
       grabCursor: true,
@@ -984,24 +1070,16 @@ ul { margin: 0; padding: 0; list-style: none; }
       keyboard: { enabled: true, onlyInViewport: true },
       a11y: { enabled: true },
     });
-  }
 
-  /* ---------- Magnetic buttons ---------- */
-  function initMagnetic() {
-    if (!isFinePointer || prefersReducedMotion || !hasGsap) return;
-    const gsap = window.gsap;
-    document.querySelectorAll('.magnetic').forEach((el) => {
-      const strength = 0.28;
-      el.addEventListener('mousemove', (e) => {
-        const rect = el.getBoundingClientRect();
-        const dx = e.clientX - (rect.left + rect.width / 2);
-        const dy = e.clientY - (rect.top + rect.height / 2);
-        gsap.to(el, { x: dx * strength, y: dy * strength, duration: 0.4, ease: 'power2.out' });
-      });
-      el.addEventListener('mouseleave', () => {
-        gsap.to(el, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1, 0.4)' });
-      });
-    });
+    /* отступы карточек зависят от ширины вьюпорта — пересчитываем при ресайзе */
+    window.addEventListener('resize', () => {
+      const nextGutter = Math.max(24, (window.innerWidth - 1240) / 2);
+      if (nextGutter !== swiper.params.slidesOffsetBefore) {
+        swiper.params.slidesOffsetBefore = nextGutter;
+        swiper.params.slidesOffsetAfter = nextGutter;
+        swiper.update();
+      }
+    }, { passive: true });
   }
 
   /* ---------- Contact form ---------- */
@@ -1032,7 +1110,6 @@ ul { margin: 0; padding: 0; list-style: none; }
     initHeader();
     initMobileMenu();
     initCasesSwiper();
-    initMagnetic();
     initForm();
     initBlobs();
     runPreloader();
