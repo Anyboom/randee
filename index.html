@@ -506,29 +506,30 @@ ul { margin: 0; padding: 0; list-style: none; }
 
 @media (max-width: 640px) {
   body { font-size: 16px; }
-  /* на мобиле облачко возвращаем, но БЕЗ анимации ширины: ширина постоянная
-     (сетка контента), контент не двигается; морфятся только высота/отступ/фон */
+  /* на мобиле пилюля появляется только фоном (fade ::before): высота и отступы
+     шапки не меняются, контент не двигается */
   /* sticky вместо fixed: едет вместе со скроллом на композиторе, без лагов */
-  .header { position: sticky; top: 0; padding-left: 0; padding-right: 0; }
+  /* 8px сверху внутри sticky-шапки: у пилюли есть зазор над собой и скруглённый
+     верх не обрезается краем экрана; боковые 20px держат контент на сетке */
+  .header { position: sticky; top: 0; padding: 8px 20px 0; }
+  /* высота одинакова в обоих состояниях (8px + 64px = 72px): контент не дёргается,
+     когда при скролле появляется пилюля */
   .header__inner {
     position: relative;
-    width: calc(100% - 40px);
-    padding: 0; min-height: 72px;
-    transition: min-height .45s cubic-bezier(0.22, 1, 0.36, 1),
-      margin-top .45s cubic-bezier(0.22, 1, 0.36, 1);
+    width: 100%;
+    padding: 0; min-height: 64px;
   }
-  /* фон-облачко — псевдоэлементом: шире и выше контента, чтобы у пилюли был воздух,
-     а контент остался на сетке страницы */
+  /* фон-облачко — псевдоэлементом: шире контента, воздух симметричный по бокам */
   .header__inner::before {
-    content: ""; position: absolute; top: -12px; right: -16px; bottom: -12px; left: -16px; z-index: -1;
+    content: ""; position: absolute; inset: 0 -14px; z-index: -1;
     border-radius: 999px;
     background: rgba(250, 246, 240, 0.82);
     backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
     opacity: 0; transition: opacity .35s ease;
   }
+  /* на мобиле морфится только фон пилюли (opacity): без смены высоты и отступов */
   .header.is-pill .header__inner {
-    min-height: 58px;
-    margin-top: 0;
+    max-width: 100%; min-height: 64px; margin-top: 0;
     background: transparent; border-radius: 0;
     backdrop-filter: none; -webkit-backdrop-filter: none;
   }
