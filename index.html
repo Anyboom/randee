@@ -57,7 +57,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 :focus-visible { outline: 2px solid var(--coral); outline-offset: 3px; border-radius: 4px; }
 
 /* якорные секции не уезжают под фиксированную шапку */
-#services, #stats, #cases, #about, #contact { scroll-margin-top: 96px; }
+#services, #stats, #cases, #about, #contact, #process, #faq { scroll-margin-top: 96px; }
 
 .skip-link {
   position: fixed; top: -60px; left: 16px; z-index: 200;
@@ -288,13 +288,8 @@ ul { margin: 0; padding: 0; list-style: none; }
 
 /* ============ Sections ============ */
 .section { padding: clamp(80px, 10vw, 140px) 0; position: relative; }
-/* плавное перетекание из hero: блобы hero продолжаются градиентом */
-#services {
-  background: linear-gradient(180deg,
-    rgba(201, 184, 255, 0.10) 0%,
-    rgba(255, 179, 138, 0.06) 22%,
-    rgba(250, 246, 240, 0) 46%);
-}
+/* фоновое перетекание из hero (#services) убрано: между hero и услугами теперь
+   стоит секция «О компании», и градиент визуально «висел» за её заголовком */
 .section-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: clamp(44px, 6vw, 72px); }
 .section-head h2 { font-size: clamp(1.9rem, 4.4vw, 3.4rem); max-width: 16ch; }
 .section-head .lead { max-width: 40ch; color: var(--ink-soft); font-size: 1.05rem; }
@@ -396,7 +391,14 @@ ul { margin: 0; padding: 0; list-style: none; }
 .cases__cta { margin-top: 44px; display: flex; justify-content: center; }
 
 /* ============ About / manifest ============ */
-.about { background: linear-gradient(180deg, transparent, rgba(201, 184, 255, 0.10), transparent); }
+/* перетекание из hero: блобы hero продолжаются градиентом на секции «О компании»
+   (секция стоит сразу после hero; до переноса этот градиент висел на #services) */
+.about {
+  background: linear-gradient(180deg,
+    rgba(201, 184, 255, 0.10) 0%,
+    rgba(255, 179, 138, 0.06) 22%,
+    rgba(250, 246, 240, 0) 46%);
+}
 .manifest { font-family: var(--font-display); font-weight: 500; font-size: clamp(1.5rem, 3.4vw, 2.7rem); line-height: 1.32; max-width: 24ch; }
 .manifest .dim { color: var(--ink-faint); transition: color .3s ease; }
 .about__grid { display: grid; gap: 48px; }
@@ -404,6 +406,66 @@ ul { margin: 0; padding: 0; list-style: none; }
 .about__side p { color: var(--ink-soft); max-width: 42ch; }
 .about__side p + p { margin-top: 18px; }
 .about__side .btn { margin-top: 30px; }
+
+/* ============ Process ============ */
+.process { display: grid; }
+.process__row {
+  --accent: var(--coral);
+  --accent-soft: rgba(255, 107, 74, 0.12);
+  display: grid; grid-template-columns: 1fr auto; align-items: center;
+  gap: clamp(20px, 4vw, 56px);
+  padding: clamp(26px, 3.5vw, 40px) clamp(4px, 1.5vw, 20px);
+  border-top: 1px solid var(--line);
+}
+.process__row:nth-child(2) { --accent: #8E7BFF; --accent-soft: rgba(142, 123, 255, 0.12); }
+.process__row:nth-child(3) { --accent: #17A05E; --accent-soft: rgba(23, 160, 94, 0.12); }
+.process__row:nth-child(4) { --accent: #2B7FC2; --accent-soft: rgba(43, 127, 194, 0.12); }
+.process__row:last-child { border-bottom: 1px solid var(--line); }
+.process__body h3 { font-size: clamp(1.05rem, 2vw, 1.35rem); margin-bottom: 10px; }
+.process__body p { color: var(--ink-soft); max-width: 52ch; font-size: 0.98rem; }
+.process__meta {
+  justify-self: end; padding: 8px 16px; border-radius: 999px; white-space: nowrap;
+  font-size: 0.8rem; font-weight: 600; color: var(--accent); background: var(--accent-soft);
+}
+
+/* ============ FAQ ============ */
+.faq { display: grid; gap: 12px; max-width: 860px; margin-inline: auto; }
+.faq__item {
+  background: var(--card); border: 1px solid rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border-radius: var(--radius-lg); overflow: hidden;
+  transition: background .35s ease;
+}
+.faq__item.is-open { background: rgba(255, 255, 255, 0.88); }
+.faq__q {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  width: 100%; padding: 20px 24px; text-align: left;
+  font-family: var(--font-display); font-weight: 500;
+  font-size: clamp(0.95rem, 1.6vw, 1.05rem); line-height: 1.4;
+}
+/* иконка «+», при открытии превращается в «×» и заливается кораллом */
+.faq__icon {
+  flex: 0 0 auto; position: relative; width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(27, 21, 36, 0.06);
+  transition: transform .45s cubic-bezier(0.22, 1, 0.36, 1), background .35s ease;
+}
+.faq__icon::before, .faq__icon::after {
+  content: ""; position: absolute; top: 50%; left: 50%; width: 12px; height: 2px;
+  margin: -1px 0 0 -6px; background: var(--ink); border-radius: 2px;
+  transition: background .35s ease;
+}
+.faq__icon::after { transform: rotate(90deg); }
+.faq__item.is-open .faq__icon { transform: rotate(45deg); background: var(--coral); }
+.faq__item.is-open .faq__icon::before, .faq__item.is-open .faq__icon::after { background: #fff; }
+/* плавное раскрытие через grid-rows: 0fr → 1fr */
+.faq__a { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .5s cubic-bezier(0.22, 1, 0.36, 1); }
+.faq__item.is-open .faq__a { grid-template-rows: 1fr; }
+.faq__a-inner { overflow: hidden; min-height: 0; }
+.faq__a p { padding: 0 24px 22px; color: var(--ink-soft); }
+@media (prefers-reduced-motion: reduce) {
+  .faq__a { transition: none; }
+  .faq__icon { transition: none; }
+}
 
 /* ============ Contact ============ */
 .contact { padding-bottom: clamp(80px, 10vw, 140px); }
@@ -554,6 +616,13 @@ ul { margin: 0; padding: 0; list-style: none; }
   .footer__card { border-radius: 24px; padding: 40px 22px 26px; }
   /* боковые отступы футера — как у контента и шапки */
   .footer { padding-left: 10px; padding-right: 10px; }
+  /* процесс: номер и текст в строке, бейдж срока — под описанием */
+  .process__row { grid-template-columns: 1fr; gap: 14px; padding: 22px 2px; }
+  .process__body p { font-size: 0.92rem; }
+  .process__meta { justify-self: start; }
+  /* FAQ: компактнее паддинги */
+  .faq__q { padding: 16px 18px; }
+  .faq__a p { padding: 0 18px 18px; }
 }
 </style>
 </head>
@@ -630,6 +699,24 @@ ul { margin: 0; padding: 0; list-style: none; }
       <div class="chip chip--seo" data-float="1"><i></i>SEO-продвижение</div>
       <div class="chip chip--brand" data-float="2"><i></i>Брендинг и дизайн</div>
       <div class="chip chip--ads" data-float="3"><i></i>Реклама с измеримой ценой заявки</div>
+    </div>
+  </section>
+
+  <!-- ================= ABOUT ================= -->
+  <section class="section about" id="about">
+    <div class="container about__grid">
+      <div>
+        <span class="tag" data-reveal>О студии</span>
+        <p class="manifest" data-reveal-lines>
+          <span class="dim">Randee — это команда маркетологов, дизайнеров и разработчиков,</span>
+          которые помогают компаниям расти и находить клиентов в любой точке мира.
+        </p>
+      </div>
+      <div class="about__side" data-reveal>
+        <p>Мы объединяем стратегию, дизайн и технологии, чтобы каждый проект приносил измеримый результат. Наши стратегии основаны на аналитике и реальных данных, а не на догадках.</p>
+        <p>Разрабатываем сайты под ключ с SEO и адаптацией под рекламу. Создаём бренды и визуальные системы, чтобы бизнес выглядел профессионально и вызывал доверие.</p>
+        <a class="btn btn--ghost" href="#contact"><span>Скачать презентацию</span></a>
+      </div>
     </div>
   </section>
 
@@ -772,20 +859,102 @@ ul { margin: 0; padding: 0; list-style: none; }
     </div>
   </section>
 
-  <!-- ================= ABOUT ================= -->
-  <section class="section about" id="about">
-    <div class="container about__grid">
-      <div>
-        <span class="tag" data-reveal>О студии</span>
-        <p class="manifest" data-reveal-lines>
-          <span class="dim">Randee — это команда маркетологов, дизайнеров и разработчиков,</span>
-          которые помогают компаниям расти и находить клиентов в любой точке мира.
-        </p>
+  <!-- ================= PROCESS ================= -->
+  <section class="section" id="process">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="tag" data-reveal>Процесс</span>
+          <h2 data-reveal>Четыре шага от заявки до роста</h2>
+        </div>
+        <p class="lead" data-reveal>Фиксируем этапы и сроки до старта. Вы всегда знаете, что происходит с проектом прямо сейчас.</p>
       </div>
-      <div class="about__side" data-reveal>
-        <p>Мы объединяем стратегию, дизайн и технологии, чтобы каждый проект приносил измеримый результат. Наши стратегии основаны на аналитике и реальных данных, а не на догадках.</p>
-        <p>Разрабатываем сайты под ключ с SEO и адаптацией под рекламу. Создаём бренды и визуальные системы, чтобы бизнес выглядел профессионально и вызывал доверие.</p>
-        <a class="btn btn--ghost" href="#contact"><span>Скачать презентацию</span></a>
+      <div class="process">
+        <div class="process__row" data-reveal>
+          <div class="process__body">
+            <h3>Погружение</h3>
+            <p>Разбираем бизнес, продукт и конкурентов. Формулируем цель в цифрах и фиксируем гипотезы, которые будем проверять.</p>
+          </div>
+          <span class="process__meta">1–2 дня</span>
+        </div>
+        <div class="process__row" data-reveal>
+          <div class="process__body">
+            <h3>Стратегия и прототип</h3>
+            <p>Структура страниц, сценарии и тексты. Собираем кликабельный прототип — вы видите и правите логику до дизайна.</p>
+          </div>
+          <span class="process__meta">3–5 дней</span>
+        </div>
+        <div class="process__row" data-reveal>
+          <div class="process__body">
+            <h3>Дизайн и разработка</h3>
+            <p>Визуал, адаптив под все экраны, скорость загрузки и SEO-база. Тестируем каждую гипотезу на реальных пользователях.</p>
+          </div>
+          <span class="process__meta">2–4 недели</span>
+        </div>
+        <div class="process__row" data-reveal>
+          <div class="process__body">
+            <h3>Запуск и рост</h3>
+            <p>Аналитика, рекламные кампании и A/B-тесты. Итерируем страницы, пока конверсия растёт, — с отчётом каждый месяц.</p>
+          </div>
+          <span class="process__meta">постоянно</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FAQ ================= -->
+  <section class="section" id="faq">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="tag" data-reveal>FAQ</span>
+          <h2 data-reveal>Вопросы перед стартом</h2>
+        </div>
+        <p class="lead" data-reveal>Не нашли свой вопрос? Напишите в Telegram — ответим в течение 15 минут в рабочее время.</p>
+      </div>
+      <div class="faq">
+        <div class="faq__item is-open" data-reveal>
+          <button class="faq__q" type="button" aria-expanded="true">
+            Сколько стоит проект?
+            <span class="faq__icon" aria-hidden="true"></span>
+          </button>
+          <div class="faq__a"><div class="faq__a-inner"><p>Зависит от задачи: лендинг, корпоративный сайт или брендинг с маркетингом. После короткого брифинга пришлём смету с фиксированной ценой и этапами — без сюрпризов в процессе.</p></div></div>
+        </div>
+        <div class="faq__item" data-reveal>
+          <button class="faq__q" type="button" aria-expanded="false">
+            Сколько времени займёт запуск?
+            <span class="faq__icon" aria-hidden="true"></span>
+          </button>
+          <div class="faq__a"><div class="faq__a-inner"><p>Средний проект — 3–6 недель от брифинга до запуска. Точные сроки фиксируем в договоре: этапы, даты, ответственные.</p></div></div>
+        </div>
+        <div class="faq__item" data-reveal>
+          <button class="faq__q" type="button" aria-expanded="false">
+            Кому будут принадлежать сайт и доступы?
+            <span class="faq__icon" aria-hidden="true"></span>
+          </button>
+          <div class="faq__a"><div class="faq__a-inner"><p>Вам. Домен, хостинг, аналитика и код оформляются на ваш аккаунт. Вы независимы в любой момент — это принципиально.</p></div></div>
+        </div>
+        <div class="faq__item" data-reveal>
+          <button class="faq__q" type="button" aria-expanded="false">
+            Что нужно от нас на старте?
+            <span class="faq__icon" aria-hidden="true"></span>
+          </button>
+          <div class="faq__a"><div class="faq__a-inner"><p>Один-два часа на брифинг и доступы к материалам о продукте. Остальное — стратегия, тексты, дизайн и разработка — на нас.</p></div></div>
+        </div>
+        <div class="faq__item" data-reveal>
+          <button class="faq__q" type="button" aria-expanded="false">
+            Что если сайт не приносит заявок?
+            <span class="faq__icon" aria-hidden="true"></span>
+          </button>
+          <div class="faq__a"><div class="faq__a-inner"><p>Мы не исчезаем после запуска: подключаем аналитику, тестируем гипотезы в рекламе и дорабатываем страницы, пока конверсия не вырастет.</p></div></div>
+        </div>
+        <div class="faq__item" data-reveal>
+          <button class="faq__q" type="button" aria-expanded="false">
+            Поддерживаете ли вы сайт после запуска?
+            <span class="faq__icon" aria-hidden="true"></span>
+          </button>
+          <div class="faq__a"><div class="faq__a-inner"><p>Да. Пакеты поддержки включают обновления, доработки и ежемесячный отчёт по метрикам — сайт не остаётся без присмотра.</p></div></div>
+        </div>
       </div>
     </div>
   </section>
@@ -1051,6 +1220,28 @@ ul { margin: 0; padding: 0; list-style: none; }
   }
 
   /* ---------- Cases carousel (Swiper) ---------- */
+  function initFaq() {
+    const items = Array.from(document.querySelectorAll('.faq__item'));
+    if (!items.length) return;
+    items.forEach((item) => {
+      const btn = item.querySelector('.faq__q');
+      if (!btn) return;
+      btn.setAttribute('aria-expanded', String(item.classList.contains('is-open')));
+      btn.addEventListener('click', () => {
+        const willOpen = !item.classList.contains('is-open');
+        items.forEach((other) => {
+          other.classList.remove('is-open');
+          const otherBtn = other.querySelector('.faq__q');
+          if (otherBtn) otherBtn.setAttribute('aria-expanded', 'false');
+        });
+        if (willOpen) {
+          item.classList.add('is-open');
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+  }
+
   function initCasesSwiper() {
     const container = document.querySelector('.cases__swiper');
     if (!container || typeof window.Swiper === 'undefined') return;
@@ -1110,6 +1301,7 @@ ul { margin: 0; padding: 0; list-style: none; }
     initAnchors();
     initHeader();
     initMobileMenu();
+    initFaq();
     initCasesSwiper();
     initForm();
     initBlobs();
